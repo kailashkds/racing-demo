@@ -22,15 +22,15 @@ class RaceMaster
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $race_title;
+    private $RaceTitle;
 
     /**
      * @ORM\Column(type="date")
      */
-    private $race_date;
+    private $RaceDate;
 
     /**
-     * @ORM\OneToMany(targetEntity=RaceDetails::class, mappedBy="racemaster")
+     * @ORM\OneToMany(targetEntity=RaceDetails::class, mappedBy="RaceMaster")
      */
     private $raceDetails;
 
@@ -46,24 +46,24 @@ class RaceMaster
 
     public function getRaceTitle(): ?string
     {
-        return $this->race_title;
+        return $this->RaceTitle;
     }
 
-    public function setRaceTitle(string $race_title): self
+    public function setRaceTitle(string $RaceTitle): self
     {
-        $this->race_title = $race_title;
+        $this->RaceTitle = $RaceTitle;
 
         return $this;
     }
 
     public function getRaceDate(): ?\DateTimeInterface
     {
-        return $this->race_date;
+        return $this->RaceDate;
     }
 
-    public function setRaceDate(\DateTimeInterface $race_date): self
+    public function setRaceDate(\DateTimeInterface $RaceDate): self
     {
-        $this->race_date = $race_date;
+        $this->RaceDate = $RaceDate;
 
         return $this;
     }
@@ -80,7 +80,7 @@ class RaceMaster
     {
         if (!$this->raceDetails->contains($raceDetail)) {
             $this->raceDetails[] = $raceDetail;
-            $raceDetail->setRacemaster($this);
+            $raceDetail->setRaceMaster($this);
         }
 
         return $this;
@@ -90,8 +90,8 @@ class RaceMaster
     {
         if ($this->raceDetails->removeElement($raceDetail)) {
             // set the owning side to null (unless already changed)
-            if ($raceDetail->getRacemaster() === $this) {
-                $raceDetail->setRacemaster(null);
+            if ($raceDetail->getRaceMaster() === $this) {
+                $raceDetail->setRaceMaster(null);
             }
         }
 

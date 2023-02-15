@@ -20,9 +20,15 @@ class RaceDetails
     private $id;
 
     /**
+     * @ORM\ManyToOne(targetEntity=RaceMaster::class, inversedBy="raceDetails")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $RaceMaster;
+
+    /**
      * @ORM\Column(type="string", length=255)
      */
-    private $full_name;
+    private $fullName;
 
     /**
      * @ORM\Column(type="string", length=50)
@@ -37,37 +43,43 @@ class RaceDetails
     /**
      * @ORM\Column(type="string", length=50)
      */
-    private $age_category;
+    private $ageCategory;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    private $overall_placement;
+    private $overallPlacement;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    private $age_category_placement;
-
-    /**
-     * @ORM\ManyToOne(targetEntity=RaceMaster::class, inversedBy="raceDetails")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $racemaster;
+    private $ageCategoryPlacement;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getFullName(): ?string
+    public function getRaceMaster(): ?RaceMaster
     {
-        return $this->full_name;
+        return $this->RaceMaster;
     }
 
-    public function setFullName(string $full_name): self
+    public function setRaceMaster(?RaceMaster $RaceMaster): self
     {
-        $this->full_name = $full_name;
+        $this->RaceMaster = $RaceMaster;
+
+        return $this;
+    }
+
+    public function getFullName(): ?string
+    {
+        return $this->fullName;
+    }
+
+    public function setFullName(string $fullName): self
+    {
+        $this->fullName = $fullName;
 
         return $this;
     }
@@ -98,48 +110,36 @@ class RaceDetails
 
     public function getAgeCategory(): ?string
     {
-        return $this->age_category;
+        return $this->ageCategory;
     }
 
-    public function setAgeCategory(string $age_category): self
+    public function setAgeCategory(string $ageCategory): self
     {
-        $this->age_category = $age_category;
+        $this->ageCategory = $ageCategory;
 
         return $this;
     }
 
     public function getOverallPlacement(): ?int
     {
-        return $this->overall_placement;
+        return $this->overallPlacement;
     }
 
-    public function setOverallPlacement(?int $overall_placement): self
+    public function setOverallPlacement(?int $overallPlacement): self
     {
-        $this->overall_placement = $overall_placement;
+        $this->overallPlacement = $overallPlacement;
 
         return $this;
     }
 
     public function getAgeCategoryPlacement(): ?int
     {
-        return $this->age_category_placement;
+        return $this->ageCategoryPlacement;
     }
 
-    public function setAgeCategoryPlacement(?int $age_category_placement): self
+    public function setAgeCategoryPlacement(?int $ageCategoryPlacement): self
     {
-        $this->age_category_placement = $age_category_placement;
-
-        return $this;
-    }
-
-    public function getRacemaster(): ?racemaster
-    {
-        return $this->racemaster;
-    }
-
-    public function setRacemaster(?racemaster $racemaster): self
-    {
-        $this->racemaster = $racemaster;
+        $this->ageCategoryPlacement = $ageCategoryPlacement;
 
         return $this;
     }
