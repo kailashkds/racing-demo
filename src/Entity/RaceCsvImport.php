@@ -2,14 +2,11 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
-use ApiPlatform\Core\Annotation\ApiProperty;
 use App\Repository\RaceCsvImportRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=RaceCsvImportRepository::class)
- * @ApiResource()
  */
 class RaceCsvImport
 {
@@ -22,14 +19,6 @@ class RaceCsvImport
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @ApiProperty(
-     *   iri="http://schema.org/file",
-     *   attributes={
-     *     "openapi_context"={
-     *       "type"="string",
-     *     }
-     *   }
-     * )
      */
     private $file;
 

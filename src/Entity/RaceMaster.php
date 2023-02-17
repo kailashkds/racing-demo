@@ -2,13 +2,58 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\RaceMasterRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Validator\Constraints as Assert;
+use App\DTO\RaceMasterDTO;
+use ApiPlatform\Core\Action\NotFoundAction;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=RaceMasterRepository::class)
+ * @ApiResource(
+ *      collectionOperations={
+ *          "get",
+ *          "importCsv" = {
+ *              "method"="post",
+ *              "input"=RaceMasterDTO::class,
+ *              "deserialize" = false,
+ *              "status"=201,
+ *              "defaults"={"_api_receive"=true},
+ *              "controller"=NotFoundAction::class,
+ *              "openapi_context" = {
+ *                  "requestBody" = {
+ *                      "content" = {
+ *                          "multipart/form-data" = {
+ *                              "schema" = {
+ *                                  "type" = "object",
+ *                                      "properties" = {
+ *                                          "racetitle" = {
+ *                                              "description" = "Race Title",
+ *                                              "type" = "string",
+ *                                             },
+ *                                          "racedate" = {
+ *                                              "description" = "Race Date",
+ *                                              "type" = "string",
+ *                                             },
+ *                                          "imagefile" = {
+ *                                              "type" = "string",
+ *                                              "format" = "binary",
+ *                                              "description" = "Upload a CSV File",
+ *                                            },
+ *                                       },
+ *                                 },
+ *                          },
+ *                      },
+ *                  },
+ *              },
+ *          },
+ *      },
+ * )
  */
 class RaceMaster
 {
@@ -16,23 +61,50 @@ class RaceMaster
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"read", "write"})
      */
-    private $RaceTitle;
+    private $raceTitle;
 
     /**
      * @ORM\Column(type="date")
+     * @Groups({"read", "write"})
      */
-    private $RaceDate;
+    private $raceDate;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Groups({"read"})
+     */
+    private $imageName;
+
+    /**
+     * @Groups({"write"})
+     * @Assert\File(
+     *     maxSize="2M",
+     * )
+     */
+    private $imageFile;
 
     /**
      * @ORM\OneToMany(targetEntity=RaceDetails::class, mappedBy="RaceMaster")
      */
     private $raceDetails;
+
+    /**
+     * @ORM\Column(type="time", nullable=true)
+     */
+    private $avgTimeMediumDistance;
+
+    /**
+     * @ORM\Column(type="time", nullable=true)
+     */
+    private $avgTimeLongDistance;
 
     public function __construct()
     {
@@ -46,26 +118,46 @@ class RaceMaster
 
     public function getRaceTitle(): ?string
     {
-        return $this->RaceTitle;
+        return $this->raceTitle;
     }
 
-    public function setRaceTitle(string $RaceTitle): self
+    public function setRaceTitle(string $raceTitle): self
     {
-        $this->RaceTitle = $RaceTitle;
+        $this->raceTitle = $raceTitle;
 
         return $this;
     }
 
     public function getRaceDate(): ?\DateTimeInterface
     {
-        return $this->RaceDate;
+        return $this->raceDate;
     }
 
-    public function setRaceDate(\DateTimeInterface $RaceDate): self
+    public function setRaceDate(\DateTimeInterface $raceDate): self
     {
-        $this->RaceDate = $RaceDate;
+        $this->raceDate = $raceDate;
 
         return $this;
+    }
+
+    public function getImageName(): ?string
+    {
+        return $this->imageName;
+    }
+
+    public function setImageName(?string $imageName): void
+    {
+        $this->imageName = $imageName;
+    }
+
+    public function getImageFile(): ?File
+    {
+        return $this->imageFile;
+    }
+
+    public function setImageFile(?File $imageFile): void
+    {
+        $this->imageFile = $imageFile;
     }
 
     /**
@@ -94,6 +186,30 @@ class RaceMaster
                 $raceDetail->setRaceMaster(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getAvgTimeMediumDistance(): ?\DateTimeInterface
+    {
+        return $this->avgTimeMediumDistance;
+    }
+
+    public function setAvgTimeMediumDistance(?\DateTimeInterface $avgTimeMediumDistance): self
+    {
+        $this->avgTimeMediumDistance = $avgTimeMediumDistance;
+
+        return $this;
+    }
+
+    public function getAvgTimeLongDistance(): ?\DateTimeInterface
+    {
+        return $this->avgTimeLongDistance;
+    }
+
+    public function setAvgTimeLongDistance(?\DateTimeInterface $avgTimeLongDistance): self
+    {
+        $this->avgTimeLongDistance = $avgTimeLongDistance;
 
         return $this;
     }
