@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiFilter;
 use App\Repository\RaceMasterRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -10,21 +11,26 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\DTO\RaceMasterDTO;
-use ApiPlatform\Core\Action\NotFoundAction;
+use App\DataTransformer\ImportCsvTransformer;
 use Doctrine\ORM\Mapping as ORM;
+use App\Controller\RacingController;
 
 /**
  * @ORM\Entity(repositoryClass=RaceMasterRepository::class)
+ * @ApiFilter(SearchFilter::class, properties={
+ *     "title": "partial",
+ * })
  * @ApiResource(
- *      collectionOperations={
+ * normalizationContext={"groups"={"read"}},
+ *     denormalizationContext={"groups"={"write"}},
+ *      itemOperations={
  *          "get",
- *          "importCsv" = {
- *              "method"="post",
- *              "input"=RaceMasterDTO::class,
+ *          "put" = {
+ *              "method"="put",
+ *              "path"= "{id}/importcsv",
+ *              "controller"=RacingController::class,
  *              "deserialize" = false,
  *              "status"=201,
- *              "defaults"={"_api_receive"=true},
- *              "controller"=NotFoundAction::class,
  *              "openapi_context" = {
  *                  "requestBody" = {
  *                      "content" = {
@@ -32,15 +38,8 @@ use Doctrine\ORM\Mapping as ORM;
  *                              "schema" = {
  *                                  "type" = "object",
  *                                      "properties" = {
- *                                          "racetitle" = {
- *                                              "description" = "Race Title",
- *                                              "type" = "string",
- *                                             },
- *                                          "racedate" = {
- *                                              "description" = "Race Date",
- *                                              "type" = "string",
- *                                             },
- *                                          "imagefile" = {
+ *                                          
+ *                                          "csv" = {
  *                                              "type" = "string",
  *                                              "format" = "binary",
  *                                              "description" = "Upload a CSV File",
@@ -77,22 +76,10 @@ class RaceMaster
      */
     private $raceDate;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     * @Groups({"read"})
-     */
-    private $imageName;
-
-    /**
-     * @Groups({"write"})
-     * @Assert\File(
-     *     maxSize="2M",
-     * )
-     */
-    private $imageFile;
 
     /**
      * @ORM\OneToMany(targetEntity=RaceDetails::class, mappedBy="RaceMaster")
+     * @Groups({"read"})
      */
     private $raceDetails;
 
@@ -140,25 +127,6 @@ class RaceMaster
         return $this;
     }
 
-    public function getImageName(): ?string
-    {
-        return $this->imageName;
-    }
-
-    public function setImageName(?string $imageName): void
-    {
-        $this->imageName = $imageName;
-    }
-
-    public function getImageFile(): ?File
-    {
-        return $this->imageFile;
-    }
-
-    public function setImageFile(?File $imageFile): void
-    {
-        $this->imageFile = $imageFile;
-    }
 
     /**
      * @return Collection<int, RaceDetails>

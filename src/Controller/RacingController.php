@@ -1,8 +1,8 @@
 <?php
 namespace App\Controller;
 
-use App\Entity\RaceMaster;
 use App\Dto\ImportDtoClass;
+use App\Entity\RaceMaster;
 use App\Message\CsvImport;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,51 +14,64 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class RacingController extends AbstractController
 {
-    /**
-     * @Route("/racing/index", name="racing")
-     */
-    public function index(MessageBusInterface $bus):Response
-    {
+    // /**
+    //  * @Route("/racing/index", name="racing")
+    //  */
+    // public function index(MessageBusInterface $bus):Response
+    // {
         
-        $bus->dispatch(new CsvImport('Look! I created a message!'));
+    //     $bus->dispatch(new CsvImport('Look! I created a message!'));
 
-        return new Response(
-            ''
-        );
+    //     return new Response(
+    //         ''
+    //     );
+    // }
+
+    public function __invoke(Request $request, $id)
+    {
+        // ... do some work - like sending an SMS message!
+
+        $uploadedFile = $request->files->get('file');
+
+        $contents = file_get_contents($uploadedFile->getRealPath());
+
+        print_r($uploadedFile);
+
+        
     }
 
     
-    // public function import(Request $request)
-    // {
-    //     $uploadedFile = $request->files->get('file');
-    //     $racetitle = $request->get('racetitle');
-    //     $racedate = $request->get('racedate');
-        
-    //     if (!$uploadedFile) {
-    //         throw new BadRequestHttpException('"file" is required');
-    //     }
-
-    //     $racemaster = new RaceMaster();
-        
-        
-
-    //     $contents = file_get_contents($uploadedFile->getRealPath());
-
-        
-       
-    //     print_r($contents);
-    //     print_r($racetitle);
-    //     print_r($racedate);
-    //     die;
-    // }
-
-    /**
-     * @Route("/import_csv", name="import_csv", methods={"POST"})
-     */
-    public function import(ImportDtoClass $result): Response
+    public function import(Request $request)
     {
+        $uploadedFile = $request->files->get('file');
+        $racetitle = $request->get('racetitle');
+        $racedate = $request->get('racedate');
+        
+        if (!$uploadedFile) {
+            throw new BadRequestHttpException('"file" is required');
+        }
+
+        // $racemaster = new RaceMaster();
+        
+        
+
+        $contents = file_get_contents($uploadedFile->getRealPath());
+
+        
        
-        dump($result);
+        print_r($contents);
+        print_r($racetitle);
+        print_r($racedate);
         die;
     }
+
+    // /**
+    //  * @Route("/import_csv", name="import_csv", methods={"POST"})
+    //  */
+    // public function import(ImportDtoClass $result): Response
+    // {
+       
+    //     dump($result);
+    //     die;
+    // }
 }
