@@ -1,0 +1,44 @@
+version: '3'
+services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    container_name: demo_nginx
+    volumes:
+      - ./docker/nginx/config/vhosts:/etc/nginx/conf.d/
+      - .:/var/www/demo
+    depends_on:
+      - php
+    networks:
+      - backend
+  mariadb:
+    image: mysql:5.7
+    container_name: demo_mariadb
+    restart: always
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./docker/mariadb/data:/var/lib/mysql
+    networks:
+      - backend
+    environment:
+#      TZ: "America/Los_Angeles"
+      MYSQL_ALLOW_EMPTY_PASSWORD: "no"
+      MYSQL_ROOT_PASSWORD: "demo"
+      MYSQL_USER: 'demo'
+      MYSQL_PASSWORD: 'demo'
+      MYSQL_DATABASE: 'demo'
+  php:
+    build: docker/php
+    container_name: demo_php
+    ports:
+      - "9000:9000"
+    volumes:
+      - .:/var/www/demo
+    depends_on:
+      - mariadb
+    networks:
+      - backend
+networks:
+  backend: {}
