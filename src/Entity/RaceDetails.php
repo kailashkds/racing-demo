@@ -23,7 +23,7 @@ class RaceDetails
      * @ORM\ManyToOne(targetEntity=RaceMaster::class, inversedBy="raceDetails")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $RaceMaster;
+    private $raceMaster;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -62,12 +62,12 @@ class RaceDetails
 
     public function getRaceMaster(): ?RaceMaster
     {
-        return $this->RaceMaster;
+        return $this->raceMaster;
     }
 
-    public function setRaceMaster(?RaceMaster $RaceMaster): self
+    public function setRaceMaster(?RaceMaster $raceMaster): self
     {
-        $this->RaceMaster = $RaceMaster;
+        $this->raceMaster = $raceMaster;
 
         return $this;
     }

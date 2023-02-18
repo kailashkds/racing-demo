@@ -10,24 +10,27 @@ use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
-use App\DTO\RaceMasterDTO;
-use App\DataTransformer\ImportCsvTransformer;
 use Doctrine\ORM\Mapping as ORM;
 use App\Controller\RacingController;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 
 /**
+ * @ApiFilter(OrderFilter::class, properties={"id": "DESC","raceTitle": "DESC","raceDate": "DESC","avgTimeMediumDistance": "DESC","avgTimeLongDistance": "DESC"})
+ * @ApiFilter(SearchFilter::class, properties={"raceTitle": "partial"})
  * @ORM\Entity(repositoryClass=RaceMasterRepository::class)
- * @ApiFilter(SearchFilter::class, properties={
- *     "title": "partial",
- * })
  * @ApiResource(
- * normalizationContext={"groups"={"read"}},
+ *     normalizationContext={"groups"={"read"}},
  *     denormalizationContext={"groups"={"write"}},
+ *     collectionOperations={
+ *          "get",
+ *          "post"
+ *     },
  *      itemOperations={
  *          "get",
  *          "put" = {
  *              "method"="put",
- *              "path"= "{id}/importcsv",
+ *              "path"= "race_masters/{id}/importcsv",
  *              "controller"=RacingController::class,
  *              "deserialize" = false,
  *              "status"=201,
@@ -79,16 +82,17 @@ class RaceMaster
 
     /**
      * @ORM\OneToMany(targetEntity=RaceDetails::class, mappedBy="RaceMaster")
-     * @Groups({"read"})
      */
     private $raceDetails;
 
     /**
+     * @Groups({"read"})
      * @ORM\Column(type="time", nullable=true)
      */
     private $avgTimeMediumDistance;
 
     /**
+     * @Groups({"read"})
      * @ORM\Column(type="time", nullable=true)
      */
     private $avgTimeLongDistance;
