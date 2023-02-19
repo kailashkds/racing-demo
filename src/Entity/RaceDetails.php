@@ -8,11 +8,19 @@ use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use App\Filter\MandatoryFilter;
 
 /**
- * @ApiFilter(SearchFilter::class, properties={"raceMaster": "exact"})
+ * @ApiFilter(SearchFilter::class, properties={"raceMaster":"exact","fullName": "partial", "distance" :"exact", "ageCategory": "partial"})
+ * @ApiFilter(OrderFilter::class, properties={"id": "DESC","fullName": "DESC","distance": "DESC","ageCategory": "DESC","overallPlacement": "DESC","ageCategoryPlacement": "DESC"})
  * @ORM\Entity(repositoryClass=RaceDetailsRepository::class)
  * @ApiResource(
+ *     attributes={
+ *         "filters"={
+ *             MandatoryFilter::class
+ *         }
+ *     },
  *     normalizationContext={"groups"={"read"}},
  *     denormalizationContext={"groups"={"write"}},
  *     collectionOperations={
