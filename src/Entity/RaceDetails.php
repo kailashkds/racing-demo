@@ -10,6 +10,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use App\Filter\MandatoryFilter;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ApiFilter(SearchFilter::class, properties={"raceMaster":"exact","fullName": "partial", "distance" :"exact", "ageCategory": "partial"})
@@ -50,24 +51,28 @@ class RaceDetails
     private $raceMaster;
 
     /**
+     * @Assert\NotBlank()
      * @Groups({"read", "write"})
      * @ORM\Column(type="string", length=255)
      */
     private $fullName;
 
     /**
+     * @Assert\Choice(choices={"long", "medium"}, multiple=false)
      * @Groups({"read", "write"})
      * @ORM\Column(type="string", length=50)
      */
     private $distance;
 
     /**
+     * @Assert\Time()
      * @Groups({"read", "write"})
      * @ORM\Column(type="time")
      */
     private $time;
 
     /**
+     * @Assert\NotBlank()
      * @Groups({"read", "write"})
      * @ORM\Column(type="string", length=50)
      */

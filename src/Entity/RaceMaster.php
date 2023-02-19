@@ -68,12 +68,14 @@ class RaceMaster
     private $id;
 
     /**
+     * @Assert\NotBlank()
      * @ORM\Column(type="string", length=255)
      * @Groups({"read", "write"})
      */
     private $raceTitle;
 
     /**
+     * @Assert\Date()
      * @ORM\Column(type="date")
      * @Groups({"read", "write"})
      */
