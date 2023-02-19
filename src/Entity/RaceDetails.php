@@ -5,14 +5,29 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\RaceDetailsRepository;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
+ * @ApiFilter(SearchFilter::class, properties={"raceMaster": "exact"})
  * @ORM\Entity(repositoryClass=RaceDetailsRepository::class)
- * @ApiResource()
+ * @ApiResource(
+ *     normalizationContext={"groups"={"read"}},
+ *     denormalizationContext={"groups"={"write"}},
+ *     collectionOperations={
+ *         "get"
+ *      },
+ *      itemOperations={
+ *          "get",
+ *          "put",
+ *      },
+ *  )
  */
 class RaceDetails
 {
     /**
+     * @Groups({"read"})
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -20,37 +35,44 @@ class RaceDetails
     private $id;
 
     /**
+     * @Groups({"read"})
      * @ORM\ManyToOne(targetEntity=RaceMaster::class, inversedBy="raceDetails")
      * @ORM\JoinColumn(nullable=false)
      */
     private $raceMaster;
 
     /**
+     * @Groups({"read", "write"})
      * @ORM\Column(type="string", length=255)
      */
     private $fullName;
 
     /**
+     * @Groups({"read", "write"})
      * @ORM\Column(type="string", length=50)
      */
     private $distance;
 
     /**
+     * @Groups({"read", "write"})
      * @ORM\Column(type="time")
      */
     private $time;
 
     /**
+     * @Groups({"read", "write"})
      * @ORM\Column(type="string", length=50)
      */
     private $ageCategory;
 
     /**
+     * @Groups({"read"})
      * @ORM\Column(type="integer", nullable=true)
      */
     private $overallPlacement;
 
     /**
+     * @Groups({"read"})
      * @ORM\Column(type="integer", nullable=true)
      */
     private $ageCategoryPlacement;
