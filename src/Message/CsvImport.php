@@ -5,12 +5,12 @@ class CsvImport
 {
     private $content;
 
-    public function __construct(string $content)
+    public function __construct(array $content)
     {
         $this->content = $content;
     }
 
-    public function getContent(): string
+    public function getContent(): array
     {
         return $this->content;
     }
