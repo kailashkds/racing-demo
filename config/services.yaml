@@ -23,5 +23,10 @@ services:
     App\Filter\MandatoryFilter:
         tags:
             - { name: api_platform.filter }
+    App\EventListener\UserPasswordEncoderListener:
+        arguments:
+            - '@security.password_encoder'
+        tags:
+            - { name: doctrine.event_listener, event: prePersist }
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
