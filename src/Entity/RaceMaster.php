@@ -24,12 +24,11 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
  *     denormalizationContext={"groups"={"write"}},
  *     collectionOperations={
  *          "get",
- *          "post"
  *     },
  *      itemOperations={
  *          "get",
- *          "put" = {
- *              "method"="put",
+ *          "post" = {
+ *              "method"="post",
  *              "path"= "race_masters/{id}/importcsv",
  *              "controller"=RacingController::class,
  *              "deserialize" = false,
@@ -41,9 +40,8 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
  *                              "schema" = {
  *                                  "type" = "object",
  *                                      "properties" = {
- *                                          
  *                                          "csv" = {
- *                                              "type" = "string",
+ *                                              "type" = "file",
  *                                              "format" = "binary",
  *                                              "description" = "Upload a CSV File",
  *                                            },

@@ -1,11 +1,13 @@
 <?php
 namespace App\Controller;
 
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use App\Dto\ImportDtoClass;
 use App\Entity\RaceMaster;
 use App\Message\CsvImport;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
@@ -14,64 +16,59 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class RacingController extends AbstractController
 {
-    // /**
-    //  * @Route("/racing/index", name="racing")
-    //  */
-    // public function index(MessageBusInterface $bus):Response
-    // {
-        
-    //     $bus->dispatch(new CsvImport('Look! I created a message!'));
+    private $messageBus;
 
-    //     return new Response(
-    //         ''
-    //     );
-    // }
+    public function __construct(
+        MessageBusInterface $messageBus)
+    {
+        $this->messageBus = $messageBus;
+    }
 
     public function __invoke(Request $request, $id)
     {
-        // ... do some work - like sending an SMS message!
-
-        $uploadedFile = $request->files->get('file');
-
-        $contents = file_get_contents($uploadedFile->getRealPath());
-
-        print_r($uploadedFile);
-
-        
-    }
-
-    
-    public function import(Request $request)
-    {
-        $uploadedFile = $request->files->get('file');
-        $racetitle = $request->get('racetitle');
-        $racedate = $request->get('racedate');
+        // $uploadedFile = $request->files->get('csv')->getContent();
+        $uploadedFile = $request->files->get('csv');
         
         if (!$uploadedFile) {
-            throw new BadRequestHttpException('"file" is required');
+            throw new BadRequestHttpException('CSV File is required');
         }
 
-        // $racemaster = new RaceMaster();
-        
-        
+        if ($uploadedFile->getClientmimeType() !== 'text/csv') {
+            return new JsonResponse(['error' => 'The uploaded file is not a CSV file']);
+        }
 
         $contents = file_get_contents($uploadedFile->getRealPath());
+        $filePath = $uploadedFile->getRealPath();
+        $fileHandle = fopen($filePath, 'r');
 
-        
-       
-        print_r($contents);
-        print_r($racetitle);
-        print_r($racedate);
-        die;
+        $header = fgetcsv($fileHandle);
+
+        $csvHeader = ["fullName","distance","time","ageCategory"];
+
+        // print_r($header[0]);die;
+        if(count($header) !== 4) {
+            return new JsonResponse(['error' => 'Column name is not equal to CSV Header']);
+        }
+
+        foreach($header as $key=>$value) {
+            if (!in_array($value, $csvHeader, true)) {
+                return new JsonResponse(['error' => 'CSV Header title is not matched!']);
+            }
+        }
+
+        $racedata = ['raceMasterId' => $id ];
+        while(($data = fgetcsv($fileHandle)) !== false) {
+            
+            foreach($header as $key=>$value) {
+                $racedata[$value] = $data[$key];
+            }
+
+            $csvImportMessage = new CsvImport($racedata);
+            $this->messageBus->dispatch($csvImportMessage);
+        }
+
+        $finalMessage = new CsvImport(['raceMasterId' => $id ]);
+        $this->messageBus->dispatch($finalMessage);
     }
 
-    // /**
-    //  * @Route("/import_csv", name="import_csv", methods={"POST"})
-    //  */
-    // public function import(ImportDtoClass $result): Response
-    // {
-       
-    //     dump($result);
-    //     die;
-    // }
 }

@@ -9,6 +9,7 @@ use App\Event\UpdatePlacementEvent;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\RaceDetails;
 use App\Entity\RaceMaster;
+use DateTimeImmutable;
 
 class CsvImportHandler implements MessageHandlerInterface
 {
@@ -30,12 +31,12 @@ class CsvImportHandler implements MessageHandlerInterface
         $this->createRaceDetailEntity($data);
     }
 
-    private function  createRaceDetailEntity($data) {
+    private function createRaceDetailEntity($data) {
         $raceDetails = new RaceDetails();
         $raceDetails->setFullName($data['fullName']);
-        $raceDetails->setAgeCategory($data['ageCategory']);
         $raceDetails->setDistance($data['distance']);
-        $raceDetails->setTime($data['time']);
+        $raceDetails->setTime(new DateTimeImmutable($data['time']));
+        $raceDetails->setAgeCategory($data['ageCategory']);
         $raceMaster = $this->em->getRepository(RaceMaster::class)->find($data['raceMasterId']);
         $raceDetails->setRaceMaster($raceMaster);
         $this->em->persist($raceDetails);

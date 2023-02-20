@@ -56,10 +56,10 @@ class UpdatePlacementEventListner
 
     private function udapteQueryExecution(int $raceMasterId) {
         try{
-            $stmt = $this->entityManager->getConnection()->prepare(sprintf(UPDATE_PLACEMENT_QUERY,$raceMasterId));
+            $stmt = $this->entityManager->getConnection()->prepare(sprintf(self::UPDATE_PLACEMENT_QUERY,$raceMasterId));
             $stmt->executeQuery();
 
-            $stmt = $this->entityManager->getConnection()->prepare(sprintf(UPDATE_AGE_PLACEMENT_QUERY,$raceMasterId));
+            $stmt = $this->entityManager->getConnection()->prepare(sprintf(self::UPDATE_AGE_PLACEMENT_QUERY,$raceMasterId));
             $stmt->executeQuery();
         } catch (\Throwable $e)
         {
