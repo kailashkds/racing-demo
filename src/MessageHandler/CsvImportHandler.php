@@ -10,22 +10,30 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\RaceDetails;
 use App\Entity\RaceMaster;
 use DateTimeImmutable;
+use Psr\Log\LoggerInterface;
 
 class CsvImportHandler implements MessageHandlerInterface
 {
     private $eventDispatcher;
     private $em;
-    public function __construct(EventDispatcherInterface $eventDispatcher, EntityManagerInterface $em)
+    private $logger;
+
+    public function __construct(EventDispatcherInterface $eventDispatcher,
+        EntityManagerInterface $em,
+        LoggerInterface $logger
+    )
     {
         $this->eventDispatcher = $eventDispatcher;
         $this->em = $em;
+        $this->logger = $logger;
     }
 
     public function __invoke(CsvImport $message)
     {
         $data = $message->getContent();
+        $this->logger->debug(json_encode($data));
         if(count($data) == 1 and isset($data['raceMasterId'])) {
-            $this->executeUpdatePlacementEvent($data['raceMasterId']);
+            $this->executeUpdatePlacementEvent((int)$data['raceMasterId']);
             return;
         }
         $this->createRaceDetailEntity($data);

@@ -69,6 +69,9 @@ class RacingController extends AbstractController
 
         $finalMessage = new CsvImport(['raceMasterId' => $id ]);
         $this->messageBus->dispatch($finalMessage);
+
+        return new JsonResponse(['success' => 'Data is imported, It may take a little while to process it.']);
+
     }
 
 }
