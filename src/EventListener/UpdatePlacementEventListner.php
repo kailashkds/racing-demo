@@ -9,6 +9,7 @@ use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Route;
 use App\Entity\RaceDetails;
+use App\Entity\RaceMaster;
 use Symfony\Component\Messenger\MessageBusInterface;
 use App\Message\CsvImport;
 use Psr\Log\LoggerInterface;
@@ -20,6 +21,8 @@ class UpdatePlacementEventListner
     private $logger;
     const UPDATE_PLACEMENT_QUERY = "UPDATE race_details SET `overall_placement` = ( SELECT COUNT(*) FROM ( SELECT DISTINCT `time` FROM race_details where distance = 'long' and race_master_id = %s ) AS t WHERE `time` < race_details.`time`) + 1 where distance = 'long'  and race_master_id = %s ;";
     const UPDATE_AGE_PLACEMENT_QUERY = "UPDATE race_details AS r1 LEFT JOIN ( SELECT r1.Id, COALESCE(COUNT(r2.Id), 0) + 1 AS rank FROM race_details AS r1 LEFT JOIN race_details AS r2 ON r1.age_category = r2.age_category AND r1.distance = r2.distance AND  r1.race_master_id = r2.race_master_id AND (r1.time > r2.time OR (r1.time = r2.time AND r1.overall_placement < r2.overall_placement)) WHERE r1.distance = 'long' and r1.race_master_id = %s GROUP BY r1.Id ) AS t ON r1.Id = t.Id SET r1.age_category_placement = t.rank;";
+    const UPDATE_AVG_TIME_LONG_DISTANCE_QUERY = "UPDATE race_master SET `avg_time_long_distance` = ( SELECT SEC_TO_TIME(AVG(time)) AS average_time FROM race_details where distance = 'long' and race_master_id = %s) where id= %s;";
+    const UPDATE_AVG_TIME_MEDIUM_DISTANCE_QUERY = "UPDATE race_master SET `avg_time_medium_distance` = ( SELECT SEC_TO_TIME(AVG(time)) AS average_time FROM race_details where distance = 'medium' and race_master_id = %s) where id= %s;";
 
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -67,6 +70,14 @@ class UpdatePlacementEventListner
 
             $stmt = $this->entityManager->getConnection()->prepare(sprintf(self::UPDATE_AGE_PLACEMENT_QUERY,$raceMasterId));
             $stmt->executeQuery();
+
+            $stmt = $this->entityManager->getConnection()->prepare(sprintf(self::UPDATE_AVG_TIME_LONG_DISTANCE_QUERY,$raceMasterId, $raceMasterId));
+            $stmt->executeQuery();
+
+            $stmt = $this->entityManager->getConnection()->prepare(sprintf(self::UPDATE_AVG_TIME_MEDIUM_DISTANCE_QUERY,$raceMasterId, $raceMasterId));
+            $stmt->executeQuery();
+
+            
         } catch (\Throwable $e)
         {
             $this->logger->error($raceMasterId);

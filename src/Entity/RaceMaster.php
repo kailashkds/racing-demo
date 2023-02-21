@@ -24,6 +24,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
  *     denormalizationContext={"groups"={"write"}},
  *     collectionOperations={
  *          "get",
+ *          "post"
  *     },
  *      itemOperations={
  *          "get",
