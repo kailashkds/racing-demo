@@ -74,7 +74,7 @@ class RaceMaster
     private $raceTitle;
 
     /**
-     * @Assert\Date()
+     * @Assert\NotBlank()
      * @ORM\Column(type="date")
      * @Groups({"read", "write"})
      */

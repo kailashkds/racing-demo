@@ -65,7 +65,7 @@ class RaceDetails
     private $distance;
 
     /**
-     * @Assert\Time()
+     * @Assert\NotBlank()
      * @Groups({"read", "write"})
      * @ORM\Column(type="time")
      */

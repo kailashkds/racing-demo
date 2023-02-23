@@ -1,0 +1,5 @@
+# config/packages/test/security.yaml
+services:
+    # Define the user password encoder service
+    App\Tests\UserPasswordEncoder:
+        class: Symfony\Component\Security\Core\Encoder\UserPasswordEncoder
