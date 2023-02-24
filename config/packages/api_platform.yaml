@@ -1,0 +1,14 @@
+api_platform:
+    enable_swagger_ui: true
+    enable_re_doc: true
+    mapping:
+        paths: ['%kernel.project_dir%/src/Entity']
+    patch_formats:
+        json: ['application/merge-patch+json']
+    swagger:
+        api_keys:
+            JWT:
+                name: Authorization
+                type: header
+    doctrine:
+        enabled: true

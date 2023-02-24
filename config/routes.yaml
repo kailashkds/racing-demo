@@ -1,0 +1,12 @@
+#index:
+#    path: /
+#    controller: App\Controller\DefaultController::index
+
+
+api:
+    path: /api
+    controller: App\Controller\DefaultController::api
+
+authentication_token:
+    path: /authentication_token
+    methods: ['post']

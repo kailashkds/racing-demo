@@ -1,6 +1,6 @@
 FROM php:7.4-fpm-alpine
 
-RUN apk add --update libzip-dev curl-dev &&\
+RUN apk add --update libzip-dev curl-dev git &&\
     docker-php-ext-install curl && \
     apk del gcc g++ &&\
     rm -rf /var/cache/apk/*
@@ -22,6 +22,9 @@ COPY setup.sh /usr/local/bin/setup
 RUN chmod +x /usr/local/bin/setup
 
 WORKDIR /var/www/demo
+
+RUN wget https://get.symfony.com/cli/installer -O - | bash
+RUN export PATH="$HOME/.symfony5/bin:$PATH"
 
 RUN mv /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini
 RUN sed -ri -e 's!;date.timezone =!date.timezone = "America\/Los_Angeles"!g' /usr/local/etc/php/php.ini

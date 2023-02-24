@@ -20,6 +20,7 @@ services:
       - "3306:3306"
     volumes:
       - ./docker/mariadb/data:/var/lib/mysql
+      - ./docker/mariadb/init:/docker-entrypoint-initdb.d
     networks:
       - backend
     environment:
