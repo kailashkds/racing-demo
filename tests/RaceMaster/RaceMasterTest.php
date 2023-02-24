@@ -2,16 +2,11 @@
 
 namespace App\Tests\RaceMaster;
 
-use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use App\Entity\RaceMaster;
-use Hautelook\AliceBundle\PhpUnit\RefreshDatabaseTrait;
 use App\Tests\AbstractTest;
-use DateTimeImmutable;
 
 class RaceMasterTest extends AbstractTest
 {
-    // This trait provided by AliceBundle will take care of refreshing the database content to a known state before each test
-    // use RefreshDatabaseTrait;
     private $token;
 
     protected function setUp(): void
@@ -25,27 +20,26 @@ class RaceMasterTest extends AbstractTest
     public function testGetRaceMasterCollection(): void
     {
         $this->createRacemasterUsingEntityManager();
-        // The client implements Symfony HttpClient's `HttpClientInterface`, and the response `ResponseInterface`
+
         $response = static::createClient()->request('GET', '/api/race_masters', [
             'headers' => [
-                'Authorization' => 'Bearer ' . $this->token,
+                'Authorization' => 'Bearer '.$this->token,
             ],
         ]);
+        $content = json_decode($response->getContent(), true);
 
+        // Assertions about the get collcation of Race Master
         $this->assertResponseIsSuccessful();
         $this->assertEquals(200, $response->getStatusCode());
-        $content = json_decode($response->getContent(),true);
+        $this->assertEquals(3, $content['hydra:totalItems']);
 
-        // $this->assertEquals(3, $content['hydra:totalItems']);
-
-        foreach($content['hydra:member'] as $row) {
+        foreach ($content['hydra:member'] as $row) {
             $this->assertArrayHasKey('id', $row);
             $this->assertArrayHasKey('raceTitle', $row);
             $this->assertArrayHasKey('raceDate', $row);
             $this->assertArrayHasKey('avgTimeLongDistance', $row);
             $this->assertArrayHasKey('avgTimeMediumDistance', $row);
         }
-
         $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
         $this->assertMatchesResourceCollectionJsonSchema(RaceMaster::class);
     }
@@ -53,17 +47,20 @@ class RaceMasterTest extends AbstractTest
     public function testFilterByRaceTitle(): void
     {
         $this->createRacemasterUsingEntityManager();
+
         $response = static::createClient()->request('GET', '/api/race_masters?raceTitle=abc', [
             'headers' => [
-                'Authorization' => 'Bearer ' . $this->token,
-            ]
-            ]);
+                'Authorization' => 'Bearer '.$this->token,
+            ],
+        ]);
 
+        $content = json_decode($response->getContent(), true);
+
+        // Assertions about the Filter by Race Title
         $this->assertResponseIsSuccessful();
         $this->assertEquals(200, $response->getStatusCode());
-        $content = json_decode($response->getContent(),true);
 
-        foreach($content['hydra:member'] as $row) {
+        foreach ($content['hydra:member'] as $row) {
             $this->assertEquals('abc', $row['raceTitle']);
         }
     }
@@ -74,40 +71,39 @@ class RaceMasterTest extends AbstractTest
 
         $client = static::createClient();
         $em = $client->getContainer()->get('doctrine.orm.entity_manager');
-        $racemasterdata = $em->getRepository(RaceMaster::class)->findBy([], 
-             array('raceDate' => 'DESC')
-           );
+        $racemasterdata = $em->getRepository(RaceMaster::class)->findBy([],
+            ['raceDate' => 'DESC']
+        );
 
         $response = $client->request('GET', '/api/race_masters?order[raceDate]=desc', [
             'headers' => [
-                'Authorization' => 'Bearer ' . $this->token,
-            ]
+                'Authorization' => 'Bearer '.$this->token,
+            ],
         ]);
 
+        $content = json_decode($response->getContent(), true);
+
+        // Assertions about the Sort by Race Date
         $this->assertResponseIsSuccessful();
         $this->assertEquals(200, $response->getStatusCode());
-        $content = json_decode($response->getContent(),true);
-
-        // dd($content['hydra:member'][0]  );
         $this->assertEquals($racemasterdata[0]->getId(), $content['hydra:member'][0]['id']);
         $this->assertEquals($racemasterdata[0]->getRaceTitle(), $content['hydra:member'][0]['raceTitle']);
-        
     }
 
     public function testCreateRacemaster(): void
     {
         $response = static::createClient()->request('POST', '/api/race_masters', [
             'headers' => [
-                'Authorization' => 'Bearer ' . $this->token,
+                'Authorization' => 'Bearer '.$this->token,
             ],
             'json' => [
                 'raceTitle' => 'Test Marathon',
                 'raceDate' => '2023-02-18',
         ]]);
 
+        // Assertions about the Sort by Race Date
         $this->assertResponseIsSuccessful();
         $this->assertEquals(201, $response->getStatusCode());
-        $content = json_decode($response->getContent());
         $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
         $this->assertMatchesRegularExpression('~^/api/race_masters/\d+$~', $response->toArray()['@id']);
         $this->assertMatchesResourceItemJsonSchema(RaceMaster::class);
@@ -117,43 +113,41 @@ class RaceMasterTest extends AbstractTest
     {
         $response = static::createClient()->request('POST', '/api/race_masters', [
             'headers' => [
-                'Authorization' => 'Bearer ' . $this->token,
+                'Authorization' => 'Bearer '.$this->token,
             ],
             'json' => [
                 'raceTitle' => 'Test Marathon',
         ]]);
-      
-        $this->assertEquals(422, $response->getStatusCode());
+
         $content = json_decode($response->getBrowserKitResponse()->getContent());
-        
+
+        // Assertions about the create invalid Race master
+        $this->assertEquals(422, $response->getStatusCode());
         $this->assertEquals('raceDate', $content->violations[0]->propertyPath);
         $this->assertEquals('This value should not be blank.', $content->violations[0]->message);
         $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
-
     }
 
-    private function createRacemasterUsingEntityManager() {
-
+    private function createRacemasterUsingEntityManager()
+    {
         $client = static::createClient();
-
         $em = $client->getContainer()->get('doctrine.orm.entity_manager');
 
         $racemaster = new RaceMaster();
         $racemaster->setRaceTitle('abc');
-        $racemaster->setRaceDate(new DateTimeImmutable('2023-02-23'));
+        $racemaster->setRaceDate(new \DateTimeImmutable('2023-02-23'));
         $em->persist($racemaster);
 
         $racemaster1 = new RaceMaster();
         $racemaster1->setRaceTitle('def');
-        $racemaster1->setRaceDate(new DateTimeImmutable('2023-02-25'));
+        $racemaster1->setRaceDate(new \DateTimeImmutable('2023-02-25'));
         $em->persist($racemaster1);
 
         $racemaster2 = new RaceMaster();
         $racemaster2->setRaceTitle('hij');
-        $racemaster2->setRaceDate(new DateTimeImmutable('2023-02-20'));
+        $racemaster2->setRaceDate(new \DateTimeImmutable('2023-02-20'));
         $em->persist($racemaster2);
 
         $em->flush();
     }
-
 }

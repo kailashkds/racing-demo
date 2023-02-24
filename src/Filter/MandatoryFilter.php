@@ -10,7 +10,6 @@ class MandatoryFilter implements FilterInterface
 {
     public function filter(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, $resourceClass, $operationName = null)
     {
-
     }
 
     public function getDescription(string $resourceClass): array
@@ -20,8 +19,8 @@ class MandatoryFilter implements FilterInterface
                 'property' => 'raceMaster',
                 'type' => 'entity',
                 'required' => true,
-                'description' => 'Filter entities by raceMaster'
-            ]
+                'description' => 'Filter entities by raceMaster',
+            ],
         ];
     }
 

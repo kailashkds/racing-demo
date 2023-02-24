@@ -21,36 +21,47 @@ use Symfony\Component\Validator\Constraints as Assert;
  *          }
  *     },
  * )
+ *
  * @ORM\Entity(repositoryClass=UserRepository::class)
+ *
  * @ORM\HasLifecycleCallbacks()
  */
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     /**
      * @Groups({"read"})
+     *
      * @ORM\Id
+     *
      * @ORM\GeneratedValue
+     *
      * @ORM\Column(type="integer")
      */
     private $id;
 
     /**
      * @Assert\Email()
+     *
      * @Groups({"read", "write"})
+     *
      * @ORM\Column(type="string", length=180, unique=true)
      */
     private $email;
 
     /**
      * @Groups({"read"})
+     *
      * @ORM\Column(type="json")
      */
     private $roles = [];
 
     /**
      * @Assert\NotBlank()
+     *
      * @Groups({"write"})
+     *
      * @var string The hashed password
+     *
      * @ORM\Column(type="string")
      */
     private $password;

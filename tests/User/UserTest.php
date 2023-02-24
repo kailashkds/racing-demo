@@ -2,9 +2,6 @@
 
 namespace App\Tests\User;
 
-use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
-use App\Entity\RaceMaster;
-use Hautelook\AliceBundle\PhpUnit\RefreshDatabaseTrait;
 use App\Tests\AbstractTest;
 
 class UserTest extends AbstractTest
@@ -14,20 +11,18 @@ class UserTest extends AbstractTest
         $client = $this->getClientObject();
 
         $data = [
-            'email' => 'admin@demo.com'
+            'email' => 'admin@demo.com',
         ];
 
-        $client->request('POST', '/api/register', ['json' => $data ]);
+        $client->request('POST', '/api/register', ['json' => $data]);
 
         $response = $client->getResponse();
-        
-        $this->assertEquals(422, $response->getStatusCode());
-        
         $content = json_decode($response->getBrowserKitResponse()->getContent());
-       
+
+        // Assertions about the created user with Invalid Parameters
+        $this->assertEquals(422, $response->getStatusCode());
         $this->assertEquals('password', $content->violations[0]->propertyPath);
         $this->assertEquals('This value should not be blank.', $content->violations[0]->message);
-
     }
 
     public function testCreateUser()
@@ -41,9 +36,7 @@ class UserTest extends AbstractTest
 
     public function testLogin(): void
     {
-        $userData = $this->createUser('admin@demo.com', 'admintest');
-
+        // Getting token
         $token = $this->getToken();
     }
-
 }

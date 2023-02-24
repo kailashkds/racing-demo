@@ -2,23 +2,25 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Controller\RacingController;
 use App\Repository\RaceMasterRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
-use App\Controller\RacingController;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ApiFilter(OrderFilter::class, properties={"id": "DESC","raceTitle": "DESC","raceDate": "DESC","avgTimeMediumDistance": "DESC","avgTimeLongDistance": "DESC"})
  * @ApiFilter(SearchFilter::class, properties={"raceTitle": "partial"})
+ *
  * @ORM\Entity(repositoryClass=RaceMasterRepository::class)
+ *
  * @ApiResource(
  *     normalizationContext={"groups"={"read"}},
  *     denormalizationContext={"groups"={"write"}},
@@ -60,26 +62,32 @@ class RaceMaster
 {
     /**
      * @ORM\Id
+     *
      * @ORM\GeneratedValue
+     *
      * @ORM\Column(type="integer")
+     *
      * @Groups({"read"})
      */
     private $id;
 
     /**
      * @Assert\NotBlank()
+     *
      * @ORM\Column(type="string", length=255)
+     *
      * @Groups({"read", "write"})
      */
     private $raceTitle;
 
     /**
      * @Assert\NotBlank()
+     *
      * @ORM\Column(type="date")
+     *
      * @Groups({"read", "write"})
      */
     private $raceDate;
-
 
     /**
      * @ORM\OneToMany(targetEntity=RaceDetails::class, mappedBy="RaceMaster")
@@ -88,12 +96,14 @@ class RaceMaster
 
     /**
      * @Groups({"read"})
+     *
      * @ORM\Column(type="time", nullable=true)
      */
     private $avgTimeMediumDistance;
 
     /**
      * @Groups({"read"})
+     *
      * @ORM\Column(type="time", nullable=true)
      */
     private $avgTimeLongDistance;
@@ -131,7 +141,6 @@ class RaceMaster
 
         return $this;
     }
-
 
     /**
      * @return Collection<int, RaceDetails>

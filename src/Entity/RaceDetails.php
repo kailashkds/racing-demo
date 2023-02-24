@@ -2,20 +2,22 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Filter\MandatoryFilter;
 use App\Repository\RaceDetailsRepository;
 use Doctrine\ORM\Mapping as ORM;
-use ApiPlatform\Core\Annotation\ApiFilter;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use Symfony\Component\Serializer\Annotation\Groups;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
-use App\Filter\MandatoryFilter;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ApiFilter(SearchFilter::class, properties={"raceMaster":"exact","fullName": "partial", "distance" :"exact", "ageCategory": "partial"})
  * @ApiFilter(OrderFilter::class, properties={"id": "DESC","fullName": "DESC","distance": "DESC","ageCategory": "DESC","overallPlacement": "DESC","ageCategoryPlacement": "DESC"})
+ *
  * @ORM\Entity(repositoryClass=RaceDetailsRepository::class)
+ *
  * @ApiResource(
  *     attributes={
  *         "filters"={
@@ -37,55 +39,70 @@ class RaceDetails
 {
     /**
      * @Groups({"read"})
+     *
      * @ORM\Id
+     *
      * @ORM\GeneratedValue
+     *
      * @ORM\Column(type="integer")
      */
     private $id;
 
     /**
      * @Groups({"read"})
+     *
      * @ORM\ManyToOne(targetEntity=RaceMaster::class, inversedBy="raceDetails")
+     *
      * @ORM\JoinColumn(nullable=false)
      */
     private $raceMaster;
 
     /**
      * @Assert\NotBlank()
+     *
      * @Groups({"read", "write"})
+     *
      * @ORM\Column(type="string", length=255)
      */
     private $fullName;
 
     /**
      * @Assert\Choice(choices={"long", "medium"}, multiple=false)
+     *
      * @Groups({"read", "write"})
+     *
      * @ORM\Column(type="string", length=50)
      */
     private $distance;
 
     /**
      * @Assert\NotBlank()
+     *
      * @Groups({"read", "write"})
+     *
      * @ORM\Column(type="time")
      */
     private $time;
 
     /**
      * @Assert\NotBlank()
+     *
      * @Groups({"read", "write"})
+     *
      * @ORM\Column(type="string", length=50)
      */
     private $ageCategory;
 
     /**
      * @Groups({"read"})
+     *
      * @ORM\Column(type="integer", nullable=true)
      */
     private $overallPlacement;
 
     /**
      * @Groups({"read"})
+     *
      * @ORM\Column(type="integer", nullable=true)
      */
     private $ageCategoryPlacement;
