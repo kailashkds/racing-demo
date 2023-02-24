@@ -4,27 +4,27 @@ Symfony project 5.4
 -------------------
 
 # Installation
+### Prerequisites
+- Ubuntu 16.04 LTS or newer (https://ubuntu.com/download)
+- Git version control: `$ sudo apt-get install git`
+- Docker (Installation: https://docs.docker.com/engine/install/ubuntu/)
+- Docker Compose (Installation: https://docs.docker.com/compose/install/)
 
-* Git clone
+* **1) Git clone**
 ``` bash
 $ git clone https://github.com/kailashkds/racing-demo.git
 ```
-* **NOTE**
-  Before moving further we need to have docker and docker-compose installed on your pc. Kindly Google for it.
-
-## Once docker is install follow the below steps
-
-* **1) Inside the docker folder**
+* **2) Inside the docker folder**
 ``` bash
 $ cd racing-demo/
 ```
 
-* **2) Build Docker**
+* **3) Build Docker**
 ``` bash
 $ docker-compose build
 ```
 
-* **3) Start the Docker**
+* **4) Start the Docker**
 ``` bash
 $ docker-compose up -d
 ```
@@ -33,7 +33,18 @@ $ docker-compose up -d
 $ 127.0.0.1 demoweb.local
 ```
 
-* **5) Docker Stop**
+* **6) Docker Stop**
 ``` bash
 $ docker-compose stop
+```
+## For running php unit test:
+
+* **1) For running tests**
+``` bash
+$ docker exec -it demo_php bash
+```
+
+* **2) For running tests**
+``` bash
+$ docker exec -it demo_php bash
 ```
